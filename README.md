@@ -1,7 +1,7 @@
 # QR Code Reader for Windows
 ### Basic AF QR Code Reader I copy + pasted together at work for a staff requirement
 
-Seriously that is all this is... I needed something at work to read QR Codes and display them in a relatively nice way that wasn't any of the ridiculous QR Code desktop applications that currently exist on the interwebs -_-)
+forked project and made some small modifications
 
 ## Credit Where is definitely Due
 This was made using the ZXing library for the QR decoding which you can find over at https://github.com/zxing/zxing
@@ -27,4 +27,10 @@ At the moment it supports only 2 QR Code types, URL encoded and Text encoded. I'
 ## Example
 ```
 /me double clicks exe file
+```
+
+
+## Credits
+```
+forked from kylegbakker/QR-Code-Reader
 ```

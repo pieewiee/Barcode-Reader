@@ -129,11 +129,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="logo.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="logo %281%29.ico" />
     <Resource Include="qr.ico" />
+    <Resource Include="Boehringer_Ingelheim_Logo.png" />
     <Content Include="Resources\scan.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

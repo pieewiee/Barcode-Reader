@@ -36,7 +36,7 @@ namespace QR_Code_Reader
         Bitmap safeTempstreamBitmap;
 
         // Sound to be played when successful detection take a place.
-        SoundPlayer player = new SoundPlayer(@"K:\QRCodeReader\Resources\digi_chime_up.wav");
+        SoundPlayer player = new SoundPlayer(@"C:\Windows\Media\Windows Exclamation.wav");
 
         // Thread for decoding in parallel with the webcam video streaming.
         Thread decodingThread;
