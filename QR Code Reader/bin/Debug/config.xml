@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<Config>
+  <checkBoxPrefix>false</checkBoxPrefix>
+  <Prefix>++</Prefix>
+  <Domains>
+    <value>http://google.de</value>
+  </Domains>
+</Config>

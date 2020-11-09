@@ -38,59 +38,8 @@
     <ApplicationIcon>qr.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
-      <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
-      <HintPath>..\packages\AForge.Video.2.2.5\lib\AForge.Video.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AForge.Video.DirectShow, Version=2.2.5.0, Culture=neutral, PublicKeyToken=61ea4348d43881b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\AForge.Video.DirectShow.2.2.5\lib\AForge.Video.DirectShow.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="zxing, Version=0.16.0.0, Culture=neutral, PublicKeyToken=830ae994e36ac27d, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZXing.Net.0.16.0\lib\net45\zxing.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="zxing.presentation, Version=0.16.0.0, Culture=neutral, PublicKeyToken=830ae994e36ac27d, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZXing.Net.0.16.0\lib\net45\zxing.presentation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="button.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="etro.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -129,10 +78,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="qr.ico" />
-    <Resource Include="Boehringer_Ingelheim_Logo.png" />
-    <Resource Include="Gear.png" />
-    <Resource Include="config.xml" />
     <Content Include="Resources\scan.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -143,4 +88,30 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ReferencePath Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\packages\AForge.2.2.5\lib\AForge.dll" />
+    <ReferencePath Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\packages\AForge.Video.DirectShow.2.2.5\lib\AForge.Video.DirectShow.dll" />
+    <ReferencePath Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\packages\AForge.Video.2.2.5\lib\AForge.Video.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\Microsoft.CSharp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\mscorlib.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Data.DataSetExtensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Net.Http.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Xml.Linq.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\WindowsBase.dll" />
+    <ReferencePath Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\packages\ZXing.Net.0.16.0\lib\net45\zxing.dll" />
+    <ReferencePath Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\packages\ZXing.Net.0.16.0\lib\net45\zxing.presentation.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\MainWindow.g.cs" />
+    <Compile Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\App.g.cs" />
+    <Compile Include="C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\QR Code Reader_Content.g.cs" />
+  </ItemGroup>
 </Project>

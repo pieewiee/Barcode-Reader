@@ -102,7 +102,6 @@ C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Debug\z
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Debug\zxing.xml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Debug\zxing.presentation.pdb
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Debug\zxing.presentation.xml
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\QR Code Reader.csprojAssemblyReference.cache
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\button.baml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\etro.baml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\MainWindow.g.cs
