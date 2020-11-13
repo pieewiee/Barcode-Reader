@@ -42,19 +42,25 @@
                 <ImageBrush ImageSource="Gear.png"/>
             </Button.Background>
         </Button>
-        <GroupBox x:Name="groupBox2" Header="" HorizontalAlignment="Left" Height="271" Margin="19,93,0,0" VerticalAlignment="Top" Width="594" BorderBrush="Black" Background="White"/>
-        <GroupBox x:Name="groupBox" Header="Domain Whitelist:" HorizontalAlignment="Left" Height="231" Margin="29,123,0,0" VerticalAlignment="Top" Width="297"/>
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="118" Margin="49,228,0,0" VerticalAlignment="Top" Width="172"/>
-        <Button x:Name="button" Content="Add" HorizontalAlignment="Left" Margin="241,170,0,0" VerticalAlignment="Top" Width="75" Click="addwhitelist"/>
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="49,167,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="172" TextChanged="textBox_TextChanged"/>
-        <Button x:Name="button1" Content="Delete" HorizontalAlignment="Left" Margin="241,326,0,0" VerticalAlignment="Top" Width="75" Click="delwhitelist"/>
-        <Label x:Name="label" Content="Allowed Domains:" HorizontalAlignment="Left" Margin="49,195,0,0" VerticalAlignment="Top" Width="129"/>
-        <Label x:Name="label1" Content="New Domain:" HorizontalAlignment="Left" Margin="49,139,0,0" VerticalAlignment="Top" Width="129" RenderTransformOrigin="0.5,-1.404"/>
-        <GroupBox x:Name="groupBox1" Header="Prefix:" HorizontalAlignment="Left" Height="87" Margin="337,123,0,0" VerticalAlignment="Top" Width="264"/>
-        <CheckBox x:Name="checkBoxPrefix" Content="Enable" HorizontalAlignment="Left" Margin="353,151,0,0" VerticalAlignment="Top" Checked="checkBoxPrefix_Checked" Unchecked="checkBoxPrefix_Checked"/>
-        <TextBox x:Name="textBoxPrefix" HorizontalAlignment="Left" Height="23" Margin="353,171,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <Button x:Name="button2" Content="Save" HorizontalAlignment="Left" Margin="483,171,0,0" VerticalAlignment="Top" Width="75" Click="saveprefix"/>
+        <GroupBox x:Name="groupBox2" Header="" HorizontalAlignment="Left" Height="271" Margin="19,93,0,0" VerticalAlignment="Top" Width="594" BorderBrush="Black" Background="White">
+
+        </GroupBox>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="143" Margin="46,186,0,0" VerticalAlignment="Top" Width="541" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Domain" Binding="{Binding Domain}" />
+                <DataGridTextColumn Header="Prefix" Binding="{Binding Prefix}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button x:Name="button" Content="Add" HorizontalAlignment="Left" Margin="348,138,0,0" VerticalAlignment="Top" Width="75" Click="addwhitelist"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="46,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="172" />
+        <Button x:Name="button1" Content="Delete" HorizontalAlignment="Left" Margin="512,334,0,0" VerticalAlignment="Top" Width="75" Click="delwhitelist"/>
+        <Label x:Name="label" Content="Whitelist:" HorizontalAlignment="Left" Margin="46,161,0,0" VerticalAlignment="Top" Width="129"/>
+        <Label x:Name="label1" Content="New Domain:" HorizontalAlignment="Left" Margin="46,112,0,0" VerticalAlignment="Top" Width="129" RenderTransformOrigin="0.5,-1.404"/>
+        <CheckBox x:Name="checkBoxPrefix" Content="Enable Prefix" HorizontalAlignment="Left" Margin="225,118,0,0" VerticalAlignment="Top" Checked="checkBoxPrefix_Checked" Unchecked="checkBoxPrefix_Checked"/>
+        <TextBox x:Name="textBoxPrefix" HorizontalAlignment="Left" Height="23" Margin="223,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
 
     </Grid>
 </Window>
+

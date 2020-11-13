@@ -15,6 +15,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.IO;
 using System.Xml;
+using System.Data;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 
 namespace QR_Code_Reader
@@ -23,7 +26,7 @@ namespace QR_Code_Reader
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
-    
+
     public partial class MainWindow : Window
     {
         int camSelected = 0;
@@ -52,43 +55,11 @@ namespace QR_Code_Reader
         QRCodeReader decoder;
 
 
-
         public MainWindow()
         {
             InitializeComponent();
-
-            textBox.Visibility = Visibility.Hidden;
-            textBoxPrefix.Visibility = Visibility.Hidden;
-            listBox.Visibility = Visibility.Hidden;
-            groupBox.Visibility = Visibility.Hidden;
-            groupBox1.Visibility = Visibility.Hidden;
-            groupBox2.Visibility = Visibility.Hidden;
-            checkBoxPrefix.Visibility = Visibility.Hidden;
-            label.Visibility = Visibility.Hidden;
-            label1.Visibility = Visibility.Hidden;
-            button.Visibility = Visibility.Hidden;
-            button1.Visibility = Visibility.Hidden;
-            button2.Visibility = Visibility.Hidden;
-
-            
-
-            var xDoc = ReturnConfig();
-
-            XmlNodeList prefix = xDoc.GetElementsByTagName("Prefix");
-            textBoxPrefix.Text = prefix[0].InnerText;
-
-            XmlNodeList checkBoxPrefixValue = xDoc.GetElementsByTagName("checkBoxPrefix");
-            checkBoxPrefix.IsChecked = bool.Parse(checkBoxPrefixValue[0].InnerText);
-
-
-            var domainNodes = xDoc.SelectNodes("/Config/Domains/value");
-            string[] domains = new string[domainNodes.Count];
-            for (int i = 0; i < domainNodes.Count; i++)
-            {
-                //domains[i] = domainNodes[i].InnerText;
-                listBox.Items.Add(domainNodes[i].InnerText);
-            }
-
+            InitUI();
+            SetDatagridContent();
         }
 
 
@@ -155,7 +126,7 @@ namespace QR_Code_Reader
                 BinaryBitmap bitmap = new BinaryBitmap(new ZXing.Common.HybridBinarizer(source));
                 Result result = new MultiFormatReader().decode(bitmap);
                 //string decodeStr = decoder.decode(snapShotBitmap);
-                
+
 
                 stopwatch.Stop();
                 //string decode = Detect(b);
@@ -173,87 +144,56 @@ namespace QR_Code_Reader
                     XmlNodeList prefix = xDoc.GetElementsByTagName("Prefix");
                     XmlNodeList checkBoxPrefix = xDoc.GetElementsByTagName("checkBoxPrefix");
 
-                    if (bool.Parse(checkBoxPrefix[0].InnerText) == false)
-                    {
-                        prefix[0].InnerText = "";
-                    }
-                        if (result.ToString().Length > 4)
-                        {
-                            if (prefix[0].InnerText == result.ToString().Substring(0, prefix[0].InnerText.Length) )
-                            {
-                                var NoPrefix = "";
 
-                                if (prefix[0].InnerText == "")
+
+                    var domainNodes = xDoc.SelectNodes("/Config/Domain");
+                    if (result.ToString().Length > 4)
+                    {
+                        for (int i = 0; i < domainNodes.Count; i++)
+                        {
+                            var Prefix = domainNodes[i].Attributes["PrefixValue"].Value.ToString();
+                            var Domain = domainNodes[i].Attributes["Value"].Value.ToString();
+                            var NoPrefix = "";
+                            if (Prefix == result.ToString().Substring(0, Prefix.Length) && Prefix.Length > 0)
+                            {
+                                if (Prefix == "")
                                 {
                                     NoPrefix = result.ToString();
                                 }
                                 else
                                 {
-                                    NoPrefix = result.ToString().Replace(prefix[0].InnerText, "");
+                                    NoPrefix = result.ToString().Replace(Prefix, "");
                                 }
-                                
-                                var domainNodes = xDoc.SelectNodes("/Config/Domains/value");
-                                var domainNode = xDoc.SelectNodes("/Config/Domains");
 
-                                string[] domains = new string[domainNodes.Count];
-
-                                for (int i = 0; i < domainNodes.Count; i++)
-                                {
-                               
-                                    if (domainNodes[i].InnerText.ToString() == NoPrefix.Substring(0, domainNodes[i].InnerText.Length).ToString()) //domainNodes[i].InnerText.Length
-                                    {
-                                        System.Diagnostics.Process.Start(NoPrefix);
-                                    }
-                                    else
-                                    {
-                                        Dispatcher.Invoke(() =>
-                                        {
-                                            if (result.ToString() != consoleBox.Text)
-                                            {
-                                                consoleBox.AppendText(result.ToString());
-                                            }
-                                        });
-                                        Thread.Sleep(3000);
-                                        Dispatcher.Invoke(() =>
-                                        {
-                                            consoleBox.Text = "";
-                                        });
-                                        //System.Windows.MessageBox.Show(result.ToString());
-                                        //System.Windows.MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString());
-                                    }
-                            }
-                            Console.WriteLine(domainNodes.Count);
-                            if (domainNodes.Count == 0)
-                            {
-
-                                Console.WriteLine("-.dsäfgüädf-gdfgmdfgkdfgm");
-                                if (NoPrefix.Substring(0, 4) == "http")
+                                if (Domain == NoPrefix.Substring(0, Domain.Length))
                                 {
                                     System.Diagnostics.Process.Start(NoPrefix);
                                 }
-                                else
+                                
+                            }
+                            else
+                            {
+                                Dispatcher.Invoke(() =>
                                 {
-                                    Dispatcher.Invoke(() =>
+                                    if (result.ToString() != consoleBox.Text)
                                     {
-                                        if (result.ToString() != consoleBox.Text)
-                                        {
-                                            consoleBox.AppendText(result.ToString());
-                                        }
-                                    });
-                                    Thread.Sleep(3000);
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        consoleBox.Text = "";
-                                    });
-                                    //System.Windows.MessageBox.Show(result.ToString());
-                                    //System.Windows.MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString());
-                                }
-
+                                        consoleBox.AppendText(result.ToString());
+                                    }
+                                });
+                                Thread.Sleep(3000);
+                                Dispatcher.Invoke(() =>
+                                {
+                                    consoleBox.Text = "";
+                                });
+                                //System.Windows.MessageBox.Show(result.ToString());
+                                //System.Windows.MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString());
                             }
                         }
-
-                          
                     }
+
+
+
+
 
                 }
             }
@@ -296,7 +236,7 @@ namespace QR_Code_Reader
         {
             decodingThread.Abort();
             camVideo.Stop();
-            stopwatch.Stop();           
+            stopwatch.Stop();
         }
 
         private void exitButton_Click(object sender, RoutedEventArgs e)
@@ -345,15 +285,6 @@ namespace QR_Code_Reader
             }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void textBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-
-        }
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
@@ -363,16 +294,13 @@ namespace QR_Code_Reader
             {
                 textBox.Visibility = Visibility.Hidden;
                 textBoxPrefix.Visibility = Visibility.Hidden;
-                listBox.Visibility = Visibility.Hidden;
-                groupBox.Visibility = Visibility.Hidden;
-                groupBox1.Visibility = Visibility.Hidden;
+                dataGrid.Visibility = Visibility.Hidden;
                 groupBox2.Visibility = Visibility.Hidden;
                 checkBoxPrefix.Visibility = Visibility.Hidden;
                 label.Visibility = Visibility.Hidden;
                 label1.Visibility = Visibility.Hidden;
                 button.Visibility = Visibility.Hidden;
                 button1.Visibility = Visibility.Hidden;
-                button2.Visibility = Visibility.Hidden;
 
                 settingstoggle = false;
             }
@@ -380,18 +308,53 @@ namespace QR_Code_Reader
             {
                 textBox.Visibility = Visibility;
                 textBoxPrefix.Visibility = Visibility;
-                listBox.Visibility = Visibility;
-                groupBox.Visibility = Visibility;
-                groupBox1.Visibility = Visibility;
+                dataGrid.Visibility = Visibility;
                 groupBox2.Visibility = Visibility;
                 checkBoxPrefix.Visibility = Visibility;
                 label.Visibility = Visibility;
                 label1.Visibility = Visibility;
                 button.Visibility = Visibility;
                 button1.Visibility = Visibility;
-                button2.Visibility = Visibility;
 
                 settingstoggle = true;
+            }
+        }
+
+        public void InitUI()
+        {
+
+            textBox.Visibility = Visibility.Hidden;
+            textBoxPrefix.Visibility = Visibility.Hidden;
+            groupBox2.Visibility = Visibility.Hidden;
+            checkBoxPrefix.Visibility = Visibility.Hidden;
+            label.Visibility = Visibility.Hidden;
+            label1.Visibility = Visibility.Hidden;
+            button.Visibility = Visibility.Hidden;
+            button1.Visibility = Visibility.Hidden;
+            dataGrid.Visibility = Visibility.Hidden;
+            checkBoxPrefix.IsChecked = false;
+            checkBoxPrefix.IsChecked = true;
+            checkBoxPrefix.IsChecked = false;
+
+            dataGrid.Columns[0].Width = 220;
+            dataGrid.Columns[1].Width = 250;
+        }
+
+        public void SetDatagridContent()
+        {
+            var xDoc = ReturnConfig();
+            var domainNodes = xDoc.SelectNodes("/Config/Domain");
+            string[] domains = new string[domainNodes.Count];
+            dataGrid.Items.Clear();
+            for (int i = 0; i < domainNodes.Count; i++)
+            {
+                domains[i] = domainNodes[i].Attributes["Value"].Value;
+
+                Config theObject = new Config();
+                theObject.Prefix = domainNodes[i].Attributes["PrefixValue"].Value;
+                theObject.Domain = domainNodes[i].Attributes["Value"].Value;
+                dataGrid.Items.Add(theObject);
+                dataGrid.IsReadOnly = true;
             }
         }
 
@@ -399,11 +362,12 @@ namespace QR_Code_Reader
         {
 
             var xDoc = ReturnConfig();
-            listBox.Items.Add(textBox.Text);
-            var domainNodes = xDoc.SelectNodes("/Config/Domains");
+            var domainNodes = xDoc.SelectNodes("/Config");
 
-            XmlElement elem = xDoc.CreateElement("value");
-            elem.InnerText = textBox.Text;
+
+            XmlElement elem = xDoc.CreateElement("Domain");
+            elem.SetAttribute("PrefixValue", textBoxPrefix.Text);
+            elem.SetAttribute("Value", textBox.Text);
 
             domainNodes[0].AppendChild(elem);
             SaveConfig(xDoc);
@@ -416,15 +380,16 @@ namespace QR_Code_Reader
             
             var xDoc = ReturnConfig();
 
-            var domainNodes = xDoc.SelectNodes("/Config/Domains/value");
-            var domainNode = xDoc.SelectNodes("/Config/Domains");
+            var domainNodes = xDoc.SelectNodes("/Config/Domain");
+            var domainNode = xDoc.SelectNodes("/Config");
             string[] domains = new string[domainNodes.Count];
 
             for (int i = 0; i < domainNodes.Count; i++)
             {
-                //domains[i] = domainNodes[i].InnerText;
 
-                if (domainNodes[i].InnerText == listBox.SelectedItem.ToString())
+
+                if ((domainNodes[i].Attributes["Value"].Value == ((QR_Code_Reader.Config)dataGrid.SelectedValue).Domain) && 
+                    (domainNodes[i].Attributes["PrefixValue"].Value == ((QR_Code_Reader.Config)dataGrid.SelectedValue).Prefix))
                 {
                     domainNode[0].RemoveChild(domainNodes[i]);
                 }
@@ -432,22 +397,8 @@ namespace QR_Code_Reader
 
             SaveConfig(xDoc);
 
-            listBox.Items.Remove(listBox.SelectedItem);
         }
 
-        private void saveprefix(object sender, RoutedEventArgs e)
-        {
-            
-            var xDoc = ReturnConfig();
-
-            XmlNodeList prefix = xDoc.GetElementsByTagName("Prefix");
-            Console.WriteLine(prefix[0].InnerText);
-
-            prefix[0].InnerText = textBoxPrefix.Text;
-
-            SaveConfig(xDoc);
-
-        }
 
         private System.Xml.XmlDocument ReturnConfig()
         {
@@ -460,26 +411,24 @@ namespace QR_Code_Reader
         private void SaveConfig(System.Xml.XmlDocument xDoc)
         {
             xDoc.Save("config.xml");
+            SetDatagridContent();
         }
 
         private void checkBoxPrefix_Checked(object sender, RoutedEventArgs e)
         {
 
-            var xDoc = ReturnConfig();
-
-            XmlNodeList prefix = xDoc.GetElementsByTagName("checkBoxPrefix");
-
             if (checkBoxPrefix.IsChecked == true)
             {
-                prefix[0].InnerText = "true";
+                textBoxPrefix.IsEnabled = true;
             }
             if (checkBoxPrefix.IsChecked == false)
             {
-                prefix[0].InnerText = "false";
+                textBoxPrefix.IsEnabled = false;
+                textBoxPrefix.Text = "";
+    
             }
             
-
-            SaveConfig(xDoc);
         }
+
     }
 }

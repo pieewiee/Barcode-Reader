@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <Config>
-  <checkBoxPrefix>false</checkBoxPrefix>
-  <Prefix>++</Prefix>
-  <Domains>
-    <value>http://google.de</value>
-  </Domains>
+  <Domain PrefixValue="" Value="http://google.de" />
+  <Domain PrefixValue="" Value="\\nas1" />
+  <Domain PrefixValue="&lt;test&gt;" Value="\\peewee-nas\" />
 </Config>

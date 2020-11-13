@@ -116,3 +116,4 @@ C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csproj.CopyComplete
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.exe
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.pdb
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csprojAssemblyReference.cache
