@@ -25,19 +25,18 @@ namespace barcode_Reader
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool _picturepresent;
-        private bool _isCloneing;
-        private bool _settingstoggle;
+        private bool _isImagePresent;
+        private bool _imageCloneProcessActice;
+        private bool _settingsToggle;
         
-        private int _jumpedframe;
-        private int _totalfreeze;
-        
+        private int _jumpedFrame;
+        private int _totalFreeze;
         private int _camSelected;
         
         private string _scannedContent = "";
         
         private Bitmap _lastDetection;
-        private Bitmap _safeTempstreamBitmap;
+        private Bitmap _safeTempStreamBitmap;
         private Bitmap _streamBitmap;
 
 
@@ -52,6 +51,7 @@ namespace barcode_Reader
         
         public MainWindow()
         {
+            
             InitializeComponent();
             InitUi();
             SetDatagridContent();
@@ -61,29 +61,29 @@ namespace barcode_Reader
 
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            if (_jumpedframe > _configdata.Frames)
+            if (_jumpedFrame > _configdata.Frames)
             {
-                _jumpedframe = 0;
-                _streamBitmap = Image2Disk.CloneBitmap(eventArgs.Frame, _isCloneing);
-                _picturepresent = true;
+                _jumpedFrame = 0;
+                _streamBitmap = Image2Disk.CloneBitmap(eventArgs.Frame, _imageCloneProcessActice);
+                _isImagePresent = true;
 
                 var ms = new MemoryStream();
-                if (_configdata.Freeze == _totalfreeze)
+                if (_configdata.Freeze == _totalFreeze)
                 {
-                    _totalfreeze = 0;
+                    _totalFreeze = 0;
                     _barcodeObject.showPoints = false;
                 }
 
                 if (_barcodeObject.showPoints)
                 {
-                    var barcodePoint = _barcodeObject.DrawPoints(_safeTempstreamBitmap);
+                    var barcodePoint = _barcodeObject.DrawPoints(_safeTempStreamBitmap);
                     barcodePoint.Save(ms, ImageFormat.Bmp);
                     _lastDetection = (Bitmap) barcodePoint.Clone();
-                    _totalfreeze += 1;
+                    _totalFreeze += 1;
                 }
                 else
                 {
-                    var darwBitmap = Image2Disk.CloneBitmap(_streamBitmap, _isCloneing);
+                    var darwBitmap = Image2Disk.CloneBitmap(_streamBitmap, _imageCloneProcessActice);
                     darwBitmap.Save(ms, ImageFormat.Bmp);
                 }
                 
@@ -99,7 +99,7 @@ namespace barcode_Reader
             }
             else
             {
-                _jumpedframe += 1;
+                _jumpedFrame += 1;
             }
             
         }
@@ -128,7 +128,7 @@ namespace barcode_Reader
         {
             while (true)
             {
-                if (_picturepresent)
+                if (_isImagePresent)
                 {
                     _configdata.GetConfigBase();
                     
@@ -137,8 +137,8 @@ namespace barcode_Reader
                     
                     Thread.Sleep(_configdata.Timeout);
                     
-                    _safeTempstreamBitmap = Image2Disk.CloneBitmap(_streamBitmap, _isCloneing);
-                    _picturepresent = false;
+                    _safeTempStreamBitmap = Image2Disk.CloneBitmap(_streamBitmap, _imageCloneProcessActice);
+                    _isImagePresent = false;
                 }
                 else
                 {
@@ -178,7 +178,7 @@ namespace barcode_Reader
             // Start a decoding process
             _decodingThread = new Thread(DecodeLoop);
             _decodingThread.Start();
-
+            _configdata.GetConfigBase();
 
                 // enumerate video devices
                 _camSources = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -190,6 +190,16 @@ namespace barcode_Reader
                 }
                 else
                 {
+                    if (_camSources.Count > _configdata.DefaultCam)
+                    {
+                        _camSelected = _configdata.DefaultCam; 
+                    }
+                    else
+                    {
+                        _camSelected = 0;
+                        _configdata.SetConfigBase("DefaultCam", "0");
+                    }
+                    
                     CamStream(_camSelected);
                 }
 
@@ -208,15 +218,15 @@ namespace barcode_Reader
 
         public void ToggleCam_Click(object sender, RoutedEventArgs e)
         {
-          
+            
             if (_camSources.Count > 1 )
             {
                 _decodingThread.Abort();
                 _camVideo.Stop();
-
+                
                 _decodingThread = new Thread(DecodeLoop);
 
-                if (_camSelected < _camSources.Count)
+                if (_camSources.Count - 1 > _camSelected)
                 {
                     CamStream(_camSelected + 1); 
                 }
@@ -225,39 +235,40 @@ namespace barcode_Reader
                     _camSelected = 0;
                     CamStream(_camSelected);
                 }
+                _configdata.DefaultCam = _camSelected;
+                _configdata.SetConfigBase("DefaultCam", _camSelected.ToString());
                 _decodingThread.Start();
             }
         }
 
         public void CamStream(int camNum)
         {
-      
-                _camSelected = camNum;
-                if (_camSources.Count > camNum)
-                {   
-                    _camVideo = new VideoCaptureDevice(_camSources[camNum].MonikerString);
-                    _camVideo.NewFrame += VideoSource_NewFrame;
-                    _camVideo.Start();
-                    
-                }
+            _camSelected = camNum;
+            if (_camSources.Count > camNum)
+            {
+                _camVideo = new VideoCaptureDevice(_camSources[camNum].MonikerString);
+                _camVideo.NewFrame += VideoSource_NewFrame;
+                _camVideo.Start();
+                
+            }
         }
 
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (_settingstoggle)
+            if (_settingsToggle)
             {
                 GroupBoxSettings.Visibility = Visibility.Hidden;
                 Crosshair.Visibility = Visibility;
 
-                _settingstoggle = false;
+                _settingsToggle = false;
             }
             else
             {
                 GroupBoxSettings.Visibility = Visibility;
                 Crosshair.Visibility = Visibility.Hidden;
 
-                _settingstoggle = true;
+                _settingsToggle = true;
             }
         }
 
@@ -292,7 +303,7 @@ namespace barcode_Reader
         private void UpdateConfig()
         {
 
-            if (_settingstoggle == false)
+            if (_settingsToggle == false)
             {
                 if (_configdata.Aim > 0)
                     Crosshair.Visibility = Visibility;
@@ -337,7 +348,7 @@ namespace barcode_Reader
             for (var i = 0; i < dataGrid.Columns.Count; i++) dataGrid.Columns[i].Width = 250;
         }
 
-        private void Addwhitelist(object sender, RoutedEventArgs e)
+        private void AddWhitelist(object sender, RoutedEventArgs e)
         {
             if (textBox.Text.Length > 6)
             {
@@ -346,7 +357,7 @@ namespace barcode_Reader
             }
         }
 
-        private void Delwhitelist(object sender, RoutedEventArgs e)
+        private void DelWhitelist(object sender, RoutedEventArgs e)
         {
             if (dataGrid.SelectedCells.Count > 0)
             {
@@ -369,10 +380,9 @@ namespace barcode_Reader
 
         private void Statusbar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (_barcodeObject.prefix == "")
-                Clipboard.SetText(_scannedContent);
-            else
-                Clipboard.SetText(_scannedContent.Replace(_barcodeObject.prefix, ""));
+            Clipboard.SetText(_barcodeObject.prefix == ""
+                ? _scannedContent
+                : _scannedContent.Replace(_barcodeObject.prefix, ""));
         }
 
         private void SliderFPS_ValueChanged(object sender, MouseEventArgs e)
@@ -400,28 +410,28 @@ namespace barcode_Reader
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             _barcodeObject.Reset();
-            _isCloneing = true;
-            _isCloneing = false;
+            _imageCloneProcessActice = true;
+            _imageCloneProcessActice = false;
         }
 
 
         private void Autopaste_Click(object sender, RoutedEventArgs e)
         {
-            var bitimg = new BitmapImage();
-            bitimg.BeginInit();
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
             if (_barcodeObject.autoPaster)
             {
-                bitimg.UriSource = new Uri(@"pack://application:,,,/Resources/uncheck.png", UriKind.RelativeOrAbsolute);
+                bitmap.UriSource = new Uri(@"pack://application:,,,/Resources/uncheck.png", UriKind.RelativeOrAbsolute);
                 _barcodeObject.autoPaster = false;
             }
             else
             {
-                bitimg.UriSource = new Uri(@"pack://application:,,,/Resources/check.png", UriKind.RelativeOrAbsolute);
+                bitmap.UriSource = new Uri(@"pack://application:,,,/Resources/check.png", UriKind.RelativeOrAbsolute);
                 _barcodeObject.autoPaster = true;
             }
 
-            bitimg.EndInit();
-            Autopaste.Background = new ImageBrush(bitimg);
+            bitmap.EndInit();
+            Autopaste.Background = new ImageBrush(bitmap);
         }
 
 
@@ -442,7 +452,7 @@ namespace barcode_Reader
         private void SaveImageButton_Click(object sender, RoutedEventArgs e)
         {
             var image2Disk = new Image2Disk();
-            image2Disk.SaveImage(_lastDetection, _safeTempstreamBitmap);
+            image2Disk.SaveImage(_lastDetection, _safeTempStreamBitmap);
         }
 
         private void OpenImageFolder(object sender, RoutedEventArgs e)

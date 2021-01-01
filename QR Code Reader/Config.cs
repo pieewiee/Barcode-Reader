@@ -20,6 +20,7 @@ namespace barcode_Reader
         public int Sound { get; set; }
         public int Aim { get; set; }
         public int Timeout { get; set; }
+        public int DefaultCam{ get; set; }
         
         
         public Config()
@@ -175,6 +176,7 @@ namespace barcode_Reader
             Freeze = Int32.Parse(configFrames[0].Attributes["Freeze"].Value);
             Sound = Int32.Parse(configFrames[0].Attributes["Sound"].Value);
             Aim = Int32.Parse(configFrames[0].Attributes["Aim"].Value);
+            DefaultCam = Int32.Parse(configFrames[0].Attributes["DefaultCam"].Value);
 
         }
 
