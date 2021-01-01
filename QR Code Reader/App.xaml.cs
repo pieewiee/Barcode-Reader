@@ -13,5 +13,9 @@ namespace QR_Code_Reader
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+           
+        }
     }
 }

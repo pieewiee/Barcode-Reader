@@ -85,9 +85,6 @@ C:\Users\kyleb\Documents\QR Code Reader\QR Code Reader\obj\Release\QR Code Reade
 C:\Users\kyleb\Documents\QR Code Reader\QR Code Reader\obj\Release\QR Code Reader.csproj.CoreCompileInputs.cache
 C:\Users\kyleb\Documents\QR Code Reader\QR Code Reader\obj\Release\QR Code Reader.exe
 C:\Users\kyleb\Documents\QR Code Reader\QR Code Reader\obj\Release\QR Code Reader.pdb
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\QR Code Reader.exe.config
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\QR Code Reader.exe
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\QR Code Reader.pdb
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\AForge.dll
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\AForge.Video.DirectShow.dll
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\AForge.Video.dll
@@ -96,24 +93,27 @@ C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\AForge.xml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\AForge.Video.xml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\AForge.Video.DirectShow.xml
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\zxing.pdb
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\zxing.xml
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\zxing.presentation.pdb
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\zxing.presentation.xml
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\button.baml
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\etro.baml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\MainWindow.g.cs
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\App.g.cs
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader_Content.g.cs
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader_MarkupCompile.cache
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader_MarkupCompile.lref
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\App.baml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\MainWindow.baml
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.g.resources
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR_Code_Reader.Properties.Resources.resources
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csproj.GenerateResource.cache
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csproj.CoreCompileInputs.cache
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csproj.CopyComplete
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.exe
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.pdb
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Barcode Reader.exe.config
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Barcode Reader.exe
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Barcode Reader.pdb
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\Barcode Reader_Content.g.cs
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\Barcode Reader_MarkupCompile.cache
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\Barcode Reader_MarkupCompile.lref
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\Barcode Reader.g.resources
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\barcode_Reader.Properties.Resources.resources
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\Barcode Reader.exe
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\Barcode Reader.pdb
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\button.baml
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\etro.baml
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Resources\logo.png
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\App.baml
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Resources\template.xml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csprojAssemblyReference.cache

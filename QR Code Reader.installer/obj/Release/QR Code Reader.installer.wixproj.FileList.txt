@@ -1,6 +1,0 @@
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader.installer\bin\Release\QR_Code_Reader.installer.msi
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader.installer\bin\Release\QR_Code_Reader.installer.wixpdb
-obj\Release\Product.wixobj
-obj\Release\QR Code Reader.installer.wixproj.BindContentsFileListnull.txt
-obj\Release\QR Code Reader.installer.wixproj.BindOutputsFileListnull.txt
-obj\Release\QR Code Reader.installer.wixproj.BindBuiltOutputsFileListnull.txt

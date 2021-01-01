@@ -1,30 +1,53 @@
-# QR Code Reader for Windows
-### Basic AF QR Code Reader I copy + pasted together at work for a staff requirement
+# Barcode Reader for Windows
 
-Seriously that is all this is... I needed something at work to read QR Codes and display them in a relatively nice way that wasn't any of the ridiculous QR Code desktop applications that currently exist on the interwebs -_-)
+### Basic AF Barcode Reader which I forked and copied + pasted together
 
-## Credit Where is definitely Due
-This was made using the ZXing library for the QR decoding which you can find over at https://github.com/zxing/zxing
+Clean and easy Barcode Reader:
 
-And
+- Most common barcodes (1D & 2D) supported
+- Open Weblinks (Whitelist)
+- Visual and audio Feedback
 
-The live webcam feed and processing is thanks to the AForge Framework over at http://www.aforgenet.com
+## Features
 
-Licences for the sake of redundancy:
-
-http://www.aforgenet.com/framework/license.html
-
-https://www.gnu.org/licenses/lgpl.html
-
-https://github.com/zxing/zxing/wiki/License-Questions
+- detect barcodes (See: Supported Formats)
+- draw detected barcodes
+- loop through all cameras
+- Open Weblink based on whitelist (Regex)
+- CopyAndPaste function (Paste Barcode content)
+- Aiming Help & Sound Feedback
+- Save Image 2 Disk
+- Adjust: Frames, Timeout, Detection Freeze Time
+- define custom logo and color theme (config.xml)
+- Debug level (0 - 4 --> config.xml)
 
 ## Usage
 
-Run it...
+.NET Framework 4.5.2 required
 
-At the moment it supports only 2 QR Code types, URL encoded and Text encoded. I'm certain the libary includes all formats, feel free to customise to suit.
+```
+run "Barcode Reader.exe"
+```
 
-## Example
-```
-/me double clicks exe file
-```
+Base configuration is stored in config.xml which is located in binary folder. User configuration is stored in %UserProfile%\Documents\Barcode-Reader\config.xml
+
+## Supported Formats
+
+| 1D product            | 1D industrial | 2D           |
+| :-------------------- | :------------ | :----------- |
+| UPC-A                 | Code 39       | QR Code      |
+| UPC-E                 | Code 93       | Data Matrix  |
+| EAN-8                 | Code 128      | Aztec        |
+| EAN-13                | Codabar       | PDF 417      |
+| UPC/EAN Extension 2/5 | ITF           | MaxiCode     |
+|                       |               | RSS-14       |
+|                       |               | RSS-Expanded |
+
+## Credits
+
+this project uses ZXing&#46;Net library for decoding barcodes in images and it uses AForge Framework for accessing webcam ressources.
+
+| Library            | license                                                  |
+| :----------------- | :------------------------------------------------------- |
+| `ZXing.Net`        | https://github.com/micjahn/ZXing.Net/blob/master/COPYING |
+| `AForge Framework` | http://www.aforgenet.com/framework/license.html          |

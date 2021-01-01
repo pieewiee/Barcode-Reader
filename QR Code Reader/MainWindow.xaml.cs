@@ -1,434 +1,468 @@
 ﻿using System;
-using System.Threading;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using AForge.Video.DirectShow;
-using AForge.Video;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Diagnostics;
-using System.Media;
-using ZXing.QrCode;
-using ZXing;
-using System.Runtime.InteropServices;
-using System.Windows.Interop;
+using System.Globalization;
 using System.IO;
-using System.Xml;
-using System.Data;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using AForge.Video;
+using AForge.Video.DirectShow;
+using ZXing;
+using ZXing.Common;
+using ZXing.QrCode;
+using Brush = System.Windows.Media.Brush;
 
-
-namespace QR_Code_Reader
+namespace barcode_Reader
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    /// 
-
     public partial class MainWindow : Window
     {
-        int camSelected = 0;
-        bool settingstoggle = false;
+        private bool _picturepresent;
+        private bool _isCloneing;
+        private bool _settingstoggle;
+        
+        private int _jumpedframe;
+        private int _totalfreeze;
+        
+        private int _camSelected;
+        
+        private string _scannedContent = "";
+        
+        private Bitmap _lastDetection;
+        private Bitmap _safeTempstreamBitmap;
+        private Bitmap _streamBitmap;
 
 
+        private Thread _decodingThread;
+        private FilterInfoCollection _camSources;
+        private VideoCaptureDevice _camVideo;
+        private QRCodeReader _decoder;
+        
+        private readonly Barcode _barcodeObject = new Barcode();
+        private readonly Config _configdata = new Config();
 
-        FilterInfoCollection camSources;
-        VideoCaptureDevice camVideo;
-
-        // A stopWatch to test the processing speed.
-        Stopwatch stopwatch = new Stopwatch();
-
-        // Bitmap buffers
-        Bitmap streamBitmap;
-        Bitmap snapShotBitmap;
-        Bitmap safeTempstreamBitmap;
-
-        // Sound to be played when successful detection take a place.
-        SoundPlayer player = new SoundPlayer(@"C:\Windows\Media\Windows Exclamation.wav");
-
-        // Thread for decoding in parallel with the webcam video streaming.
-        Thread decodingThread;
-
-        // The QR Decoder variable from ZXing
-        QRCodeReader decoder;
-
-
+        
         public MainWindow()
         {
             InitializeComponent();
-            InitUI();
+            InitUi();
             SetDatagridContent();
+            
         }
 
 
-
-        void videoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            try
+            if (_jumpedframe > _configdata.Frames)
             {
-                streamBitmap = (Bitmap)eventArgs.Frame.Clone();
-                safeTempstreamBitmap = (Bitmap)streamBitmap.Clone();
-                //pictureBox1.Source = ImageSourceForBitmap(safeTempstreamBitmap);
-                MemoryStream ms = new MemoryStream();
-                streamBitmap.Save(ms, ImageFormat.Bmp);
+                _jumpedframe = 0;
+                _streamBitmap = Image2Disk.CloneBitmap(eventArgs.Frame, _isCloneing);
+                _picturepresent = true;
+
+                var ms = new MemoryStream();
+                if (_configdata.Freeze == _totalfreeze)
+                {
+                    _totalfreeze = 0;
+                    _barcodeObject.showPoints = false;
+                }
+
+                if (_barcodeObject.showPoints)
+                {
+                    var barcodePoint = _barcodeObject.DrawPoints(_safeTempstreamBitmap);
+                    barcodePoint.Save(ms, ImageFormat.Bmp);
+                    _lastDetection = (Bitmap) barcodePoint.Clone();
+                    _totalfreeze += 1;
+                }
+                else
+                {
+                    var darwBitmap = Image2Disk.CloneBitmap(_streamBitmap, _isCloneing);
+                    darwBitmap.Save(ms, ImageFormat.Bmp);
+                }
+                
                 ms.Seek(0, SeekOrigin.Begin);
-                BitmapImage bi = new BitmapImage();
+                var bi = new BitmapImage();
                 bi.BeginInit();
                 bi.StreamSource = ms;
                 bi.EndInit();
-
                 bi.Freeze();
-                Dispatcher.BeginInvoke(new ThreadStart(delegate
-                {
-                    pictureBox1.Source = bi;
-                }));
+                
+                Dispatcher.BeginInvoke(new ThreadStart(delegate { pictureBox1.Source = bi; }));
+
             }
-            catch (Exception exp)
+            else
             {
-                Console.Write(exp.Message);
+                _jumpedframe += 1;
             }
+            
         }
+
 
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
+
 
         public ImageSource ImageSourceForBitmap(Bitmap bmp)
         {
             var handle = bmp.GetHbitmap();
             try
             {
-                return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
             }
-            finally { DeleteObject(handle); }
+            finally
+            {
+                DeleteObject(handle);
+            }
         }
 
-        public void decodeLoop()
+        public void DecodeLoop()
         {
             while (true)
             {
-                // 1 second pause for the thread. This could be changed manually to a prefereable decoding interval.
-                Thread.Sleep(1000);
-                if (streamBitmap != null)
-                    snapShotBitmap = (Bitmap)safeTempstreamBitmap.Clone();
-                else
-                    return;
-
-                // Reset watch before decoding the streamed image.
-                stopwatch.Reset();
-                stopwatch.Start();
-
-                // Decode the snapshot.
-                LuminanceSource source;
-                source = new BitmapLuminanceSource(snapShotBitmap);
-                BinaryBitmap bitmap = new BinaryBitmap(new ZXing.Common.HybridBinarizer(source));
-                Result result = new MultiFormatReader().decode(bitmap);
-                //string decodeStr = decoder.decode(snapShotBitmap);
-
-
-                stopwatch.Stop();
-                //string decode = Detect(b);
-
-                // If decodeStr is null then there was no QR detected, otherwise show the result of detection and play the sound.
-                if (result == null)
+                if (_picturepresent)
                 {
-                    //System.Windows.MessageBox.Show("There is no QR Code!");
+                    _configdata.GetConfigBase();
+                    
+                    if (GroupBoxSettings.Visibility == Visibility.Hidden)
+                        Dispatcher.Invoke(() => { UpdateConfig(); });
+                    
+                    Thread.Sleep(_configdata.Timeout);
+                    
+                    _safeTempstreamBitmap = Image2Disk.CloneBitmap(_streamBitmap, _isCloneing);
+                    _picturepresent = false;
                 }
                 else
                 {
-                    player.Play();
-                    var xDoc = ReturnConfig();
+                    continue;
+                }
 
-                    XmlNodeList prefix = xDoc.GetElementsByTagName("Prefix");
-                    XmlNodeList checkBoxPrefix = xDoc.GetElementsByTagName("checkBoxPrefix");
+                LuminanceSource source;
+                Result result;
 
-
-
-                    var domainNodes = xDoc.SelectNodes("/Config/Domain");
-                    if (result.ToString().Length > 4)
+                source = new BitmapLuminanceSource(_streamBitmap);
+                var bitmap = new BinaryBitmap(new HybridBinarizer(source));
+                result = new MultiFormatReader().decode(bitmap);
+                
+                if (result != null)
+                {
+                    if (result.ToString().Length > 4) _barcodeObject.setBarcodeText(_configdata, result.ToString());
+                    Dispatcher.Invoke(() =>
                     {
-                        for (int i = 0; i < domainNodes.Count; i++)
-                        {
-                            var Prefix = domainNodes[i].Attributes["PrefixValue"].Value.ToString();
-                            var Domain = domainNodes[i].Attributes["Value"].Value.ToString();
-                            var NoPrefix = "";
-                            if (Prefix == result.ToString().Substring(0, Prefix.Length) && Prefix.Length > 0)
-                            {
-                                if (Prefix == "")
-                                {
-                                    NoPrefix = result.ToString();
-                                }
-                                else
-                                {
-                                    NoPrefix = result.ToString().Replace(Prefix, "");
-                                }
-
-                                if (Domain == NoPrefix.Substring(0, Domain.Length))
-                                {
-                                    System.Diagnostics.Process.Start(NoPrefix);
-                                }
-                                
-                            }
-                            else
-                            {
-                                Dispatcher.Invoke(() =>
-                                {
-                                    if (result.ToString() != consoleBox.Text)
-                                    {
-                                        consoleBox.AppendText(result.ToString());
-                                    }
-                                });
-                                Thread.Sleep(3000);
-                                Dispatcher.Invoke(() =>
-                                {
-                                    consoleBox.Text = "";
-                                });
-                                //System.Windows.MessageBox.Show(result.ToString());
-                                //System.Windows.MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString());
-                            }
-                        }
-                    }
-
-
-
-
-
+                        _barcodeObject.SetPoints(result.ResultPoints);
+                        _barcodeObject.SetFormat(result.BarcodeFormat.ToString());
+                        _barcodeObject.PlaySound();
+                        _barcodeObject.AutoPaster();
+                        _barcodeObject.OpenWeblink();
+                        
+                        _scannedContent = result.ToString();
+                        if (result.ToString() != "Content: " + consoleBox.Content)
+                            consoleBox.Content = "Content: " + result;
+                    });
                 }
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Initialize sound variable
-            //player.Stream = Properties.Resources.connect;
-
-            decoder = new QRCodeReader();
+            _decoder = new QRCodeReader();
 
             // Start a decoding process
-            decodingThread = new Thread(new ThreadStart(decodeLoop));
-            decodingThread.Start();
+            _decodingThread = new Thread(DecodeLoop);
+            _decodingThread.Start();
 
-            try
-            {
+
                 // enumerate video devices
-                camSources = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+                _camSources = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
-                if (camSources.Count < 1)
+                if (_camSources.Count < 1)
                 {
-                    System.Windows.MessageBox.Show("No camera detected.");
-                    System.Environment.Exit(0);
+                    MessageBox.Show("No camera detected.");
+                    Environment.Exit(0);
                 }
                 else
                 {
-                    camStream(camSelected);
+                    CamStream(_camSelected);
                 }
 
-            }
-            catch (VideoException exp)
-            {
-                Console.Write(exp.Message);
-            }
         }
-
+        
         private void Window_Closed(object sender, EventArgs e)
         {
-            decodingThread.Abort();
-            camVideo.Stop();
-            stopwatch.Stop();
+            _decodingThread.Abort();
+            _camVideo.Stop();
         }
 
-        private void exitButton_Click(object sender, RoutedEventArgs e)
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Environment.Exit(0);
+            Environment.Exit(0);
         }
 
-        public void toggleCam_Click(object sender, RoutedEventArgs e)
+        public void ToggleCam_Click(object sender, RoutedEventArgs e)
         {
-            if (camSources.Count > 1)
+          
+            if (_camSources.Count > 1 )
             {
-                decodingThread.Abort();
-                camVideo.Stop();
-                try
+                _decodingThread.Abort();
+                _camVideo.Stop();
+
+                _decodingThread = new Thread(DecodeLoop);
+
+                if (_camSelected < _camSources.Count)
                 {
-                    decodingThread = new Thread(new ThreadStart(decodeLoop));
-                    if (camSelected == 0)
-                    {
-                        camStream(1);
-                    }
-                    else
-                    {
-                        camStream(0);
-                    }
-                    decodingThread.Start();
+                    CamStream(_camSelected + 1); 
                 }
-                catch (Exception exp)
+                else
                 {
-                    Console.Write(exp);
+                    _camSelected = 0;
+                    CamStream(_camSelected);
                 }
+                _decodingThread.Start();
             }
         }
 
-        public void camStream(int camNum)
+        public void CamStream(int camNum)
         {
-            try
-            {
-                camVideo = new VideoCaptureDevice(camSources[camNum].MonikerString);
-                camVideo.NewFrame += new NewFrameEventHandler(videoSource_NewFrame);
-                camVideo.Start();
-                camSelected = camNum;
-            }
-            catch (VideoException exp)
-            {
-                Console.Write(exp.Message);
-            }
+      
+                _camSelected = camNum;
+                if (_camSources.Count > camNum)
+                {   
+                    _camVideo = new VideoCaptureDevice(_camSources[camNum].MonikerString);
+                    _camVideo.NewFrame += VideoSource_NewFrame;
+                    _camVideo.Start();
+                    
+                }
         }
 
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-
-
-            if (settingstoggle == true)
+            if (_settingstoggle)
             {
-                textBox.Visibility = Visibility.Hidden;
-                textBoxPrefix.Visibility = Visibility.Hidden;
-                dataGrid.Visibility = Visibility.Hidden;
-                groupBox2.Visibility = Visibility.Hidden;
-                checkBoxPrefix.Visibility = Visibility.Hidden;
-                label.Visibility = Visibility.Hidden;
-                label1.Visibility = Visibility.Hidden;
-                button.Visibility = Visibility.Hidden;
-                button1.Visibility = Visibility.Hidden;
+                GroupBoxSettings.Visibility = Visibility.Hidden;
+                Crosshair.Visibility = Visibility;
 
-                settingstoggle = false;
+                _settingstoggle = false;
             }
             else
             {
-                textBox.Visibility = Visibility;
-                textBoxPrefix.Visibility = Visibility;
-                dataGrid.Visibility = Visibility;
-                groupBox2.Visibility = Visibility;
-                checkBoxPrefix.Visibility = Visibility;
-                label.Visibility = Visibility;
-                label1.Visibility = Visibility;
-                button.Visibility = Visibility;
-                button1.Visibility = Visibility;
+                GroupBoxSettings.Visibility = Visibility;
+                Crosshair.Visibility = Visibility.Hidden;
 
-                settingstoggle = true;
+                _settingstoggle = true;
             }
         }
 
-        public void InitUI()
+        private void SetDatagridContent()
         {
-
-            textBox.Visibility = Visibility.Hidden;
-            textBoxPrefix.Visibility = Visibility.Hidden;
-            groupBox2.Visibility = Visibility.Hidden;
-            checkBoxPrefix.Visibility = Visibility.Hidden;
-            label.Visibility = Visibility.Hidden;
-            label1.Visibility = Visibility.Hidden;
-            button.Visibility = Visibility.Hidden;
-            button1.Visibility = Visibility.Hidden;
-            dataGrid.Visibility = Visibility.Hidden;
-            checkBoxPrefix.IsChecked = false;
-            checkBoxPrefix.IsChecked = true;
-            checkBoxPrefix.IsChecked = false;
-
-            dataGrid.Columns[0].Width = 220;
-            dataGrid.Columns[1].Width = 250;
-        }
-
-        public void SetDatagridContent()
-        {
-            var xDoc = ReturnConfig();
-            var domainNodes = xDoc.SelectNodes("/Config/Domain");
-            string[] domains = new string[domainNodes.Count];
             dataGrid.Items.Clear();
-            for (int i = 0; i < domainNodes.Count; i++)
-            {
-                domains[i] = domainNodes[i].Attributes["Value"].Value;
 
-                Config theObject = new Config();
-                theObject.Prefix = domainNodes[i].Attributes["PrefixValue"].Value;
-                theObject.Domain = domainNodes[i].Attributes["Value"].Value;
-                dataGrid.Items.Add(theObject);
-                dataGrid.IsReadOnly = true;
+            _configdata.GetDataGridContentData(dataGrid);
+            dataGrid.IsReadOnly = true;
+            var converter = new BrushConverter();
+            var brush = (Brush) converter.ConvertFromString("#" + _configdata.ButtonColor);
+
+            foreach (Button button in StackPanelMainButtons.Children) button.Foreground = brush;
+            if (File.Exists(_configdata.Logo))
+            {
+                image.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + _configdata.Logo));
             }
-        }
-
-        private void addwhitelist(object sender, RoutedEventArgs e)
-        {
-
-            var xDoc = ReturnConfig();
-            var domainNodes = xDoc.SelectNodes("/Config");
-
-
-            XmlElement elem = xDoc.CreateElement("Domain");
-            elem.SetAttribute("PrefixValue", textBoxPrefix.Text);
-            elem.SetAttribute("Value", textBox.Text);
-
-            domainNodes[0].AppendChild(elem);
-            SaveConfig(xDoc);
-
-        }
-
-
-        private void delwhitelist(object sender, RoutedEventArgs e)
-        {
             
-            var xDoc = ReturnConfig();
-
-            var domainNodes = xDoc.SelectNodes("/Config/Domain");
-            var domainNode = xDoc.SelectNodes("/Config");
-            string[] domains = new string[domainNodes.Count];
-
-            for (int i = 0; i < domainNodes.Count; i++)
+            for (var i = 0; i < _configdata.Debug; i++)
             {
-
-
-                if ((domainNodes[i].Attributes["Value"].Value == ((QR_Code_Reader.Config)dataGrid.SelectedValue).Domain) && 
-                    (domainNodes[i].Attributes["PrefixValue"].Value == ((QR_Code_Reader.Config)dataGrid.SelectedValue).Prefix))
+                var count = 0;
+                foreach (UIElement element in StackPanelMainSettings.Children)
                 {
-                    domainNode[0].RemoveChild(domainNodes[i]);
+                    count++;
+                    if (count > _configdata.Debug) continue;
+                    element.Visibility = Visibility.Hidden;
                 }
             }
-
-            SaveConfig(xDoc);
-
         }
+        
 
-
-        private System.Xml.XmlDocument ReturnConfig()
+        private void UpdateConfig()
         {
 
-            XmlDocument xDoc = new XmlDocument();
-            xDoc.Load("config.xml");
-            return xDoc;
-        }
-
-        private void SaveConfig(System.Xml.XmlDocument xDoc)
-        {
-            xDoc.Save("config.xml");
-            SetDatagridContent();
-        }
-
-        private void checkBoxPrefix_Checked(object sender, RoutedEventArgs e)
-        {
-
-            if (checkBoxPrefix.IsChecked == true)
+            if (_settingstoggle == false)
             {
-                textBoxPrefix.IsEnabled = true;
+                if (_configdata.Aim > 0)
+                    Crosshair.Visibility = Visibility;
+                else
+                    Crosshair.Visibility = Visibility.Hidden;
             }
+
+            
+            if (sliderFrames.Value != _configdata.Frames || sliderThread.Value != _configdata.Timeout ||
+                sliderFreeze.Value != _configdata.Freeze || sliderFreeze.Value != _configdata.Freeze ||
+                Convert.ToBoolean(_configdata.Aim) != AimCheckBox.IsChecked ||
+                SoundcheckBox.IsChecked != Convert.ToBoolean(_configdata.Sound))
+            {
+                sliderFrames.Value = _configdata.Frames;
+                sliderThread.Value = _configdata.Timeout;
+                sliderFreeze.Value = _configdata.Freeze;
+                LabelSliderFramesMax.Content = 25 - _configdata.Frames;
+                LabelSliderThreadMax.Content = _configdata.Timeout;
+                LabelSliderFreezeMax.Content = _configdata.Freeze;
+                if (_configdata.Sound > 0)
+                    SoundcheckBox.IsChecked = true;
+                else
+                    SoundcheckBox.IsChecked = false;
+                if (_configdata.Aim > 0)
+                {
+                    AimCheckBox.IsChecked = true;
+                    _configdata.Aim = 1;
+                }
+                else
+                {
+                    AimCheckBox.IsChecked = false;
+                    _configdata.Aim = 0;
+                }
+            }
+        }
+
+        private void InitUi()
+        {
+            GroupBoxSettings.Visibility = Visibility.Hidden;
+            checkBoxPrefix.IsChecked = false;
+
+            for (var i = 0; i < dataGrid.Columns.Count; i++) dataGrid.Columns[i].Width = 250;
+        }
+
+        private void Addwhitelist(object sender, RoutedEventArgs e)
+        {
+            if (textBox.Text.Length > 6)
+            {
+                _configdata.AddwhitelistConfig(textBox.Text, textBoxPrefix.Text);
+                SetDatagridContent();
+            }
+        }
+
+        private void Delwhitelist(object sender, RoutedEventArgs e)
+        {
+            if (dataGrid.SelectedCells.Count > 0)
+            {
+                _configdata.DelwhitelistConfig(dataGrid);
+                SetDatagridContent();
+            }
+        }
+
+
+        private void CheckBoxPrefix_Checked(object sender, RoutedEventArgs e)
+        {
+            if (checkBoxPrefix.IsChecked == true) textBoxPrefix.IsEnabled = true;
             if (checkBoxPrefix.IsChecked == false)
             {
                 textBoxPrefix.IsEnabled = false;
                 textBoxPrefix.Text = "";
-    
             }
-            
         }
 
+
+        private void Statusbar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_barcodeObject.prefix == "")
+                Clipboard.SetText(_scannedContent);
+            else
+                Clipboard.SetText(_scannedContent.Replace(_barcodeObject.prefix, ""));
+        }
+
+        private void SliderFPS_ValueChanged(object sender, MouseEventArgs e)
+        {
+            _configdata.SetConfigBase("Frames", sliderFrames.Value.ToString(CultureInfo.InvariantCulture));
+            _configdata.Frames = (int) sliderFrames.Value;
+            LabelSliderFramesMax.Content = 25 - _configdata.Frames;
+        }
+
+
+        private void SliderThread_ValueChanged(object sender, MouseEventArgs e)
+        {
+            _configdata.SetConfigBase("Timeout", sliderThread.Value.ToString(CultureInfo.InvariantCulture));
+            _configdata.Timeout = (int) sliderThread.Value;
+            LabelSliderThreadMax.Content = _configdata.Timeout;
+        }
+
+        private void SliderFreeze_ValueChanged(object sender, MouseEventArgs e)
+        {
+            _configdata.SetConfigBase("Freeze", sliderFreeze.Value.ToString(CultureInfo.InvariantCulture));
+            _configdata.Freeze = (int) sliderFreeze.Value;
+            LabelSliderFreezeMax.Content = _configdata.Freeze;
+        }
+
+        private void ResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            _barcodeObject.Reset();
+            _isCloneing = true;
+            _isCloneing = false;
+        }
+
+
+        private void Autopaste_Click(object sender, RoutedEventArgs e)
+        {
+            var bitimg = new BitmapImage();
+            bitimg.BeginInit();
+            if (_barcodeObject.autoPaster)
+            {
+                bitimg.UriSource = new Uri(@"pack://application:,,,/Resources/uncheck.png", UriKind.RelativeOrAbsolute);
+                _barcodeObject.autoPaster = false;
+            }
+            else
+            {
+                bitimg.UriSource = new Uri(@"pack://application:,,,/Resources/check.png", UriKind.RelativeOrAbsolute);
+                _barcodeObject.autoPaster = true;
+            }
+
+            bitimg.EndInit();
+            Autopaste.Background = new ImageBrush(bitimg);
+        }
+
+
+        private void SoundcheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            if (_configdata.Sound > 0)
+            {
+                _configdata.SetConfigBase("Sound", "0");
+                _configdata.Sound = 0;
+            }
+            else
+            {
+                _configdata.SetConfigBase("Sound", "1");
+                _configdata.Sound = 1;
+            }
+        }
+
+        private void SaveImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            var image2Disk = new Image2Disk();
+            image2Disk.SaveImage(_lastDetection, _safeTempstreamBitmap);
+        }
+
+        private void OpenImageFolder(object sender, RoutedEventArgs e)
+        {
+            var image2Disk = new Image2Disk();
+            image2Disk.OpenImageFolder();
+        }
+
+        private void AimCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            if (_configdata.Aim > 0)
+            {
+                _configdata.SetConfigBase("Aim", "0");
+                _configdata.Aim = 0;
+            }
+            else
+            {
+                _configdata.SetConfigBase("Aim", "1");
+                _configdata.Aim = 1;
+            }
+        }
     }
 }

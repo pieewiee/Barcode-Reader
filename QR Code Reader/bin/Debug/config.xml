@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<Config>
-  <Domain PrefixValue="" Value="http://google.de" />
-  <Domain PrefixValue="" Value="\\nas1" />
-  <Domain PrefixValue="&lt;test&gt;" Value="\\peewee-nas\" />
-</Config>

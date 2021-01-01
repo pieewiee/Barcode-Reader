@@ -1,0 +1,6 @@
+﻿<?xml version="1.0"?>
+<Config>
+  <Base Frames="0" Timeout="1" Freeze="21" Sound="1" Aim="1" Debug="0" Color="FF1A347F" Logo="logo.png" />
+  <Domain PrefixValue="" Value="http:\/\/.*.com   " />
+  <Domain PrefixValue="" Value="https:\/\/.*.com   " />
+</Config>
