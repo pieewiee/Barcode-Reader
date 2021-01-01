@@ -27,7 +27,7 @@ Clean and easy Barcode Reader:
 run "Barcode Reader.exe"
 ```
 
-Base configuration is stored in config.xml which is located in binary folder. User configuration is stored in %UserProfile%\Documents\Barcode-Reader\config.xml
+Base configuration is stored in Resources\template.xml which is located in binary folder. User configuration is stored in %UserProfile%\Documents\Barcode-Reader\config.xml
 
 ```xml
 <?xml version="1.0"?>
