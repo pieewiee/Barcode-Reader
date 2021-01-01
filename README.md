@@ -4,9 +4,7 @@
 
 Clean and easy Barcode Reader:
 
-- Most common barcodes (1D & 2D) supported
-- Open Weblinks (Whitelist)
-- Visual and audio Feedback
+![alt text](https://github.com/pieewiee/QR-Code-Reader/blob/master/Examaple.png)
 
 ## Features
 
@@ -30,6 +28,14 @@ run "Barcode Reader.exe"
 ```
 
 Base configuration is stored in config.xml which is located in binary folder. User configuration is stored in %UserProfile%\Documents\Barcode-Reader\config.xml
+
+```xml
+<?xml version="1.0"?>
+<Config>
+  <Base Frames="0" Timeout="1" Freeze="20" Sound="1" Aim="1" DefaultCam="0" Debug="0" Color="FF1A347F" Logo="Resources\logo.png" />
+  <Domain PrefixValue="" Value="https:\/\/.*" />
+</Config>
+```
 
 ## Supported Formats
 
