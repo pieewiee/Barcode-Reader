@@ -21,14 +21,20 @@ namespace barcode_Reader
         public int Aim { get; set; }
         public int Timeout { get; set; }
         public int DefaultCam{ get; set; }
-        
-        
+        private string documentFolder = "\\Barcode-Reader\\";
+
+
         public Config()
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             String userConfig = path + "\\Barcode-Reader\\config.xml";
-
             _userConfig = userConfig;
+
+            if (!Directory.Exists(path + documentFolder))
+            {
+                Directory.CreateDirectory(path + documentFolder);
+            }
+            
             if (!File.Exists(userConfig))
             {
                 File.Copy("Resources\\template.xml", userConfig, true);
