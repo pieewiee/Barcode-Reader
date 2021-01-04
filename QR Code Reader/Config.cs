@@ -14,7 +14,7 @@ namespace barcode_Reader
         public string ButtonColor { get; set; }
         public string Logo { get; set; }
         public int Debug { get; set; }
-        public string Userconfig;
+        private readonly string _userConfig;
         public int Frames { get; set; }
         public int Freeze { get; set; }
         public int Sound { get; set; }
@@ -28,11 +28,10 @@ namespace barcode_Reader
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             String userConfig = path + "\\Barcode-Reader\\config.xml";
 
-            Userconfig = userConfig;
+            _userConfig = userConfig;
             if (!File.Exists(userConfig))
             {
-                
-                File.Copy("template.xml", userConfig, true);
+                File.Copy("Resources\\template.xml", userConfig, true);
             }
         }
 
@@ -98,7 +97,7 @@ namespace barcode_Reader
 
         private XmlDocument ReturnConfig()
         {
-            string ConfigFile = Userconfig;
+            string ConfigFile = _userConfig;
             DateTime tempFileModificaton = File.GetLastWriteTime(@ConfigFile);
 
             if (DateTime.Compare(_configModification, tempFileModificaton) < 0)
@@ -125,7 +124,7 @@ namespace barcode_Reader
         
         private void SaveConfig(XmlDocument xDoc)
         {
-            xDoc.Save(Userconfig);
+            xDoc.Save(_userConfig);
 
         }
 
