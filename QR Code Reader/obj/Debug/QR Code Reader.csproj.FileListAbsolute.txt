@@ -115,7 +115,6 @@ C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\B
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\Barcode Reader.exe
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\Barcode Reader.pdb
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\barcode_Reader.Properties.Resources.resources
-C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\QR Code Reader.csprojAssemblyReference.cache
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Debug\App.baml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Debug\Resources\logo.png
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Debug\Resources\template.xml
