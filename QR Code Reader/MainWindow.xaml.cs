@@ -380,9 +380,8 @@ namespace barcode_Reader
 
         private void Statusbar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Clipboard.SetText(_barcodeObject.prefix == ""
-                ? _scannedContent
-                : _scannedContent.Replace(_barcodeObject.prefix, ""));
+            Clipboard.SetText(_barcodeObject.scannedContent);
+            
         }
 
         private void SliderFPS_ValueChanged(object sender, MouseEventArgs e)

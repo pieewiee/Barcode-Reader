@@ -27,7 +27,7 @@ namespace barcode_Reader
         public string oldBarcode;
         public bool autoPaster;
         private string _scannedContentChanged;
-        private string _scannedContent;
+        public string scannedContent;
         private string _scannedContentChangedSound;
         private Config _configdata;
 
@@ -97,7 +97,7 @@ namespace barcode_Reader
            
             var xDoc = configdata.GetConfig();
             _configdata = configdata;
-            _scannedContent = barcodeText;
+            scannedContent = barcodeText;
 
             var domainNodes = xDoc.SelectNodes("/Config/Domain");
             if (barcodeText.Length > 4)
@@ -155,19 +155,19 @@ namespace barcode_Reader
 
         public void AutoPaster()
         {
-            if (autoPaster && _scannedContentChanged != _scannedContent)
+            if (autoPaster && _scannedContentChanged != scannedContent)
             {
-                _scannedContentChanged = _scannedContent;
+                _scannedContentChanged = scannedContent;
                 if (string.IsNullOrEmpty(prefix))
                 {
                     //Copytoclipboard();
-                    VirtualKeyboard.SendUnicode(_scannedContent + "\n");
+                    VirtualKeyboard.SendUnicode(scannedContent + "\n");
                     VirtualKeyboard.SendKeyBoradKey((short) Key.Return);
                 }
                 else
                 {
                     //Copytoclipboard();
-                    VirtualKeyboard.SendUnicode(_scannedContent.Replace(prefix, "") + "\n");
+                    VirtualKeyboard.SendUnicode(scannedContent.Replace(prefix, "") + "\n");
                     VirtualKeyboard.SendKeyBoradKey((short) Key.Return);
                 }
             }
@@ -182,16 +182,16 @@ namespace barcode_Reader
             rawBarcode = "";
             _scannedContentChanged = "";
             _scannedContentChangedSound = "";
-            _scannedContent = "";
+            scannedContent = "";
 
         }
         
         public void PlaySound()
         {
-            if (_scannedContentChangedSound != _scannedContent)
+            if (_scannedContentChangedSound != scannedContent)
             {
                 //nvironment.Exit(1);
-                _scannedContentChangedSound = _scannedContent;
+                _scannedContentChangedSound = scannedContent;
                 var playSound = new SoundPlayer(Properties.Resources.Beep);
                 for (var i = 0; i < _configdata.Sound; i++)
                 {

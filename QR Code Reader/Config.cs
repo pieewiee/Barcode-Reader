@@ -11,9 +11,9 @@ namespace barcode_Reader
         
         private DateTime _configModification;
         private XmlDocument _xmlConfig;
-        public string ButtonColor { get; set; }
-        public string Logo { get; set; }
-        public int Debug { get; set; }
+        public string ButtonColor { get; private set; }
+        public string Logo { get; private set; }
+        public int Debug { get; private set; }
         private readonly string _userConfig;
         public int Frames { get; set; }
         public int Freeze { get; set; }

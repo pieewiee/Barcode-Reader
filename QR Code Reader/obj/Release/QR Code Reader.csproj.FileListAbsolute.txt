@@ -116,3 +116,4 @@ C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Resources\logo.png
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\App.baml
 C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\bin\Release\Resources\template.xml
+C:\Users\tilln\OneDrive\Desktop\QR-Code-Reader-master\QR Code Reader\obj\Release\QR Code Reader.csprojAssemblyReference.cache
