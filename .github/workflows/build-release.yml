@@ -10,37 +10,50 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-    timeout-minutes: 20
+    runs-on: windows-2022
+    timeout-minutes: 30
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup MSBuild
+    - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
       
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v2
       
     - name: Restore NuGet packages
+      working-directory: .
       run: nuget restore "QR Code Reader.sln"
       
     - name: Build solution
-      run: msbuild "QR Code Reader.sln" /p:Configuration=Release /p:Platform="Any CPU" /p:DebugType=None
+      working-directory: .
+      run: msbuild "QR Code Reader.sln" /p:Configuration=Release /p:Platform="Any CPU" /p:DebugSymbols=false /p:DebugType=None /verbosity:minimal
       
+    - name: List build output
+      shell: powershell
+      run: |
+        Write-Host "Build directory contents:"
+        Get-ChildItem -Recurse "QR Code Reader\bin\Release" -ErrorAction SilentlyContinue | Select-Object FullName
+        
     - name: Create Release Package
       shell: powershell
       run: |
         $releaseDir = "BarcodeReader-v2.0.0"
         $buildDir = "QR Code Reader\bin\Release"
         
+        Write-Host "Creating release directory..."
         New-Item -ItemType Directory -Force -Path $releaseDir
         
-        Copy-Item "$buildDir\Barcode Reader.exe" $releaseDir\
-        Copy-Item "$buildDir\*.dll" $releaseDir\
-        Copy-Item "$buildDir\Barcode Reader.exe.config" $releaseDir\
-        Copy-Item -Recurse "$buildDir\Resources" $releaseDir\
+        Write-Host "Copying files..."
+        Copy-Item "$buildDir\Barcode Reader.exe" $releaseDir\ -ErrorAction Stop
+        Copy-Item "$buildDir\*.dll" $releaseDir\ -ErrorAction SilentlyContinue
+        Copy-Item "$buildDir\Barcode Reader.exe.config" $releaseDir\ -ErrorAction SilentlyContinue
+        
+        if (Test-Path "$buildDir\Resources") {
+          Copy-Item -Recurse "$buildDir\Resources" $releaseDir\ -ErrorAction SilentlyContinue
+        }
         
         @"
         Barcode Reader v2.0.0
@@ -65,20 +78,24 @@ jobs:
         GitHub: https://github.com/pieewiee/Barcode-Reader
         "@ | Out-File -FilePath "$releaseDir\README.txt" -Encoding UTF8
         
-        Compress-Archive -Path $releaseDir -DestinationPath "BarcodeReader-v2.0.0.zip"
+        Write-Host "Creating ZIP..."
+        Compress-Archive -Path $releaseDir -DestinationPath "BarcodeReader-v2.0.0.zip" -Force
+        
+        Write-Host "Release package created!"
+        Get-Item BarcodeReader-v2.0.0.zip
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: BarcodeReader-v2.0.0
         path: BarcodeReader-v2.0.0.zip
+        if-no-files-found: error
         
     - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+      if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v2
       with:
         files: BarcodeReader-v2.0.0.zip
-        tag_name: ${{ github.ref_name != 'master' && github.ref_name || 'v2.0.0' }}
         name: Barcode Reader v2.0.0
         body: |
           ## 🎉 Major Stability Release!
