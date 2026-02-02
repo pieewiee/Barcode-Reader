@@ -1,6 +1,10 @@
 # Barcode Reader for Windows
 
-### Basic AF Barcode Reader which I forked and copied + pasted together
+### 🚀 Version 2.0 - Now Stable!
+
+**Major stability improvements!** Fixed crashes, memory leaks, and threading issues. Now available as MSI installer.
+
+[📥 Download Latest MSI Installer](https://github.com/pieewiee/Barcode-Reader/releases)
 
 Clean and easy Barcode Reader:
 

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" 
+           Name="Barcode Reader" 
+           Language="1033" 
+           Version="2.0.0.0" 
+           Manufacturer="pieewiee" 
+           UpgradeCode="A1B2C3D4-E5F6-4A5B-8C9D-0E1F2A3B4C5D">
+    
+    <Package InstallerVersion="200" 
+             Compressed="yes" 
+             InstallScope="perMachine" 
+             Description="Barcode and QR Code Reader for Windows"
+             Comments="Improved stability and performance" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="Barcode Reader" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Icon Id="icon.ico" SourceFile="QR Code Reader\Resources\qr.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+    
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+    
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Barcode Reader" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Barcode Reader"/>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="BarcodeReaderExe" 
+              Source="QR Code Reader\bin\Release\Barcode Reader.exe" 
+              KeyPath="yes" 
+              Checksum="yes">
+          <Shortcut Id="StartMenuShortcut"
+                    Directory="ApplicationProgramsFolder"
+                    Name="Barcode Reader"
+                    Description="Scan barcodes and QR codes"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="icon.ico"
+                    IconIndex="0"
+                    Advertise="yes" />
+        </File>
+      </Component>
+      
+      <Component Id="AForgeCore" Guid="*">
+        <File Source="QR Code Reader\bin\Release\AForge.dll" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="AForgeVideo" Guid="*">
+        <File Source="QR Code Reader\bin\Release\AForge.Video.dll" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="AForgeVideoDirectShow" Guid="*">
+        <File Source="QR Code Reader\bin\Release\AForge.Video.DirectShow.dll" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="ZXing" Guid="*">
+        <File Source="QR Code Reader\bin\Release\zxing.dll" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="ZXingPresentation" Guid="*">
+        <File Source="QR Code Reader\bin\Release\zxing.presentation.dll" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="Config" Guid="*">
+        <File Source="QR Code Reader\bin\Release\Barcode Reader.exe.config" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="ResourcesDir" Guid="*">
+        <CreateFolder />
+        <File Source="QR Code Reader\bin\Release\Resources\template.xml" KeyPath="yes" />
+        <File Source="QR Code Reader\bin\Release\Resources\logo.png" />
+        <File Source="QR Code Reader\bin\Release\Resources\Beep.wav" />
+      </Component>
+      
+    </ComponentGroup>
+    
+    <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder" Guid="*">
+      <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+      <RegistryValue Root="HKCU" 
+                     Key="Software\pieewiee\BarcodeReader" 
+                     Name="installed" 
+                     Type="integer" 
+                     Value="1" 
+                     KeyPath="yes"/>
+    </Component>
+    
+  </Fragment>
+</Wix>
