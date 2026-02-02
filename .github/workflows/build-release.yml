@@ -2,7 +2,8 @@ name: Build and Release
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
     tags:
       - 'v*'
   workflow_dispatch:
@@ -10,53 +11,97 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 20
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1
+      uses: NuGet/setup-nuget@v2
       
     - name: Restore NuGet packages
       run: nuget restore "QR Code Reader.sln"
       
     - name: Build solution
-      run: msbuild "QR Code Reader.sln" /p:Configuration=Release /p:Platform="Any CPU"
+      run: msbuild "QR Code Reader.sln" /p:Configuration=Release /p:Platform="Any CPU" /p:DebugType=None
       
-    - name: Package Release
+    - name: Create Release Package
       shell: powershell
       run: |
-        $releaseDir = "QR Code Reader\bin\Release"
-        Compress-Archive -Path "$releaseDir\*" -DestinationPath "BarcodeReader-v2.0.0.zip"
+        $releaseDir = "BarcodeReader-v2.0.0"
+        $buildDir = "QR Code Reader\bin\Release"
+        
+        New-Item -ItemType Directory -Force -Path $releaseDir
+        
+        Copy-Item "$buildDir\Barcode Reader.exe" $releaseDir\
+        Copy-Item "$buildDir\*.dll" $releaseDir\
+        Copy-Item "$buildDir\Barcode Reader.exe.config" $releaseDir\
+        Copy-Item -Recurse "$buildDir\Resources" $releaseDir\
+        
+        @"
+        Barcode Reader v2.0.0
+        =====================
+        
+        MAJOR STABILITY IMPROVEMENTS!
+        - Fixed crashes (no more Thread.Abort)
+        - Better memory management
+        - Thread-safe operations  
+        - Improved error handling
+        
+        REQUIREMENTS:
+        - Windows 7 or later
+        - .NET Framework 4.5.2+
+        - Webcam
+        
+        INSTALLATION:
+        1. Extract this ZIP
+        2. Run 'Barcode Reader.exe'
+        3. Done!
+        
+        GitHub: https://github.com/pieewiee/Barcode-Reader
+        "@ | Out-File -FilePath "$releaseDir\README.txt" -Encoding UTF8
+        
+        Compress-Archive -Path $releaseDir -DestinationPath "BarcodeReader-v2.0.0.zip"
         
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: BarcodeReader-Release
+        name: BarcodeReader-v2.0.0
         path: BarcodeReader-v2.0.0.zip
         
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v2
       with:
         files: BarcodeReader-v2.0.0.zip
+        tag_name: ${{ github.ref_name != 'master' && github.ref_name || 'v2.0.0' }}
+        name: Barcode Reader v2.0.0
         body: |
-          ## Barcode Reader v2.0.0
+          ## 🎉 Major Stability Release!
           
-          **Major Stability Update!**
-          - Fixed crashes and memory leaks
-          - Improved thread safety
-          - Better camera handling
+          ### What's Fixed
+          - ❌ **Removed Thread.Abort()** → Proper CancellationToken pattern
+          - ✅ **Memory leaks fixed** → Proper Bitmap disposal
+          - ✅ **Thread-safety** → Lock statements prevent race conditions
+          - ✅ **Exception handling** → Comprehensive try-catch blocks
+          - ✅ **Clean shutdown** → Proper resource cleanup
           
           ### Installation
           1. Download `BarcodeReader-v2.0.0.zip`
-          2. Extract to a folder
+          2. Extract anywhere
           3. Run `Barcode Reader.exe`
           
-          Requires .NET Framework 4.5.2 or higher
+          ### Requirements
+          - Windows 7+
+          - .NET Framework 4.5.2+
+          - Webcam
+          
+          **No more random crashes!** 🚀
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
