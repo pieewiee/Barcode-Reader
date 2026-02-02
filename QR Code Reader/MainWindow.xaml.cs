@@ -183,7 +183,6 @@ namespace barcode_Reader
                 try
                 {
                     Bitmap currentBitmap = null;
-                    Bitmap safeBitmap = null;
                     
                     if (_isImagePresent)
                     {
@@ -330,7 +329,7 @@ namespace barcode_Reader
                 if (_camVideo != null && _camVideo.IsRunning)
                 {
                     _camVideo.SignalToStop();
-                    _camVideo.WaitForStop(2000);
+                    _camVideo.WaitForStop();
                 }
                 
                 // Wait for decoding thread
@@ -370,7 +369,7 @@ namespace barcode_Reader
                     if (_camVideo != null && _camVideo.IsRunning)
                     {
                         _camVideo.SignalToStop();
-                        _camVideo.WaitForStop(1000);
+                        _camVideo.WaitForStop();
                     }
                     
                     // Stop and restart decoding thread
