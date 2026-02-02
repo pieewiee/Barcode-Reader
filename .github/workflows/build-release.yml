@@ -2,6 +2,7 @@ name: Build and Release
 
 on:
   push:
+    branches: [ master ]
     tags:
       - 'v*'
   workflow_dispatch:
@@ -14,7 +15,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
-    - name: Setup .NET Framework
+    - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
       
     - name: Setup NuGet
@@ -26,27 +27,36 @@ jobs:
     - name: Build solution
       run: msbuild "QR Code Reader.sln" /p:Configuration=Release /p:Platform="Any CPU"
       
-    - name: Install WiX Toolset
-      run: |
-        choco install wixtoolset -y
-        
-    - name: Build MSI Installer
+    - name: Package Release
       shell: powershell
       run: |
-        $env:PATH += ";C:\Program Files (x86)\WiX Toolset v3.11\bin"
-        candle.exe installer.wxs -o installer.wixobj
-        light.exe installer.wixobj -o BarcodeReader-Setup.msi -ext WixUIExtension
+        $releaseDir = "QR Code Reader\bin\Release"
+        Compress-Archive -Path "$releaseDir\*" -DestinationPath "BarcodeReader-v2.0.0.zip"
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: BarcodeReader-Release
+        path: BarcodeReader-v2.0.0.zip
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: BarcodeReader-Setup.msi
+        files: BarcodeReader-v2.0.0.zip
+        body: |
+          ## Barcode Reader v2.0.0
+          
+          **Major Stability Update!**
+          - Fixed crashes and memory leaks
+          - Improved thread safety
+          - Better camera handling
+          
+          ### Installation
+          1. Download `BarcodeReader-v2.0.0.zip`
+          2. Extract to a folder
+          3. Run `Barcode Reader.exe`
+          
+          Requires .NET Framework 4.5.2 or higher
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: BarcodeReader-Setup
-        path: BarcodeReader-Setup.msi
